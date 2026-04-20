@@ -1,13 +1,23 @@
 from dotenv import load_dotenv
 import os
-import asyncio
 
-from openai import OpenAI, AsyncOpenAI
-from openai._exceptions import BadRequestError
+from openai import OpenAI
 
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = None
+
+
+def get_client():
+    global client
+    if client is None:
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError(
+                "OPENAI_API_KEY is not set."
+            )
+        client = OpenAI(api_key=api_key)
+    return client
 
 def create_message(sys_prompt: str, usr_prompt: str):
     return [
@@ -23,7 +33,7 @@ def gpt_call(
     temperature: float,
 ):
     message = create_message(system_prompt, user_prompt)
-    response = client.responses.create(
+    response = get_client().responses.create(
         model=model,
         temperature=temperature,
         max_output_tokens=max_new_tokens,

@@ -1,3 +1,3 @@
-from .evaluate import evaluate
-from .predict import predict
 from .prompt import *
+from .predict import *
+from .evaluate import *
