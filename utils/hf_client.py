@@ -5,8 +5,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 def get_HF_pipeline(model_name: str, max_new_tokens: int, temperature: float):
-
-
+    import torch
+    from transformers import BitsAndBytesConfig
     bnb_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_use_double_quant=True,
