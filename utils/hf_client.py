@@ -1,12 +1,10 @@
 import gc
-from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig, pipeline
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 import torch
 from dotenv import load_dotenv
 
 load_dotenv()
 def get_HF_pipeline(model_name: str, max_new_tokens: int, temperature: float):
-    import torch
-    from transformers import BitsAndBytesConfig
     bnb_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_use_double_quant=True,
@@ -21,14 +19,13 @@ def get_HF_pipeline(model_name: str, max_new_tokens: int, temperature: float):
         device_map="auto",
         attn_implementation="sdpa",
     )
-    gen_config = {
+    generation_config = {
         "max_new_tokens": max_new_tokens,
         "temperature": temperature,
         "do_sample": True if temperature > 0 else False,
-        "return_full_text": False,
+        "pad_token_id": tokenizer.pad_token_id,
     }
-    pipe = pipeline("text-generation", model=model, tokenizer=tokenizer, **gen_config)
-    return pipe
+    return tokenizer, model, generation_config
 
 def create_message(system_prompt_str: str, user_prompt_str: str):
     return [
@@ -43,14 +40,26 @@ def hf_call(
     max_new_tokens: int,
     temperature: float,
 ):
-    pipe = get_HF_pipeline(model_name, max_new_tokens, temperature)
+    tokenizer, model, generation_config = get_HF_pipeline(
+        model_name, max_new_tokens, temperature
+    )
     message = create_message(system_prompt, user_prompt)
-    prompt = pipe.tokenizer.apply_chat_template(
+    prompt = tokenizer.apply_chat_template(
         message, tokenize=False, add_generation_prompt=True
     )
-    outputs = pipe(prompt)
-    content = outputs[0]["generated_text"]
+    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+    input_length = inputs["input_ids"].shape[-1]
+
+    with torch.no_grad():
+        outputs = model.generate(**inputs, **generation_config)
+
+    generated_tokens = outputs[0][input_length:]
+    content = tokenizer.decode(generated_tokens, skip_special_tokens=True)
+
+    del inputs
     del outputs
+    del model
+    del tokenizer
     torch.cuda.empty_cache()
     gc.collect()
     return content
