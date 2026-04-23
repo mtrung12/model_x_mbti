@@ -1,0 +1,22 @@
+======================================================================
+Personality Trait Detection - Classification Report
+======================================================================
+
+Model            : gpt-4o-mini
+Test file        : F:\std\GR\code\model_x_mbti\result\gpt-4o-mini/oneshot/20260421-180747\predictions.csv
+# Records        : 1735
+# Failed         : 0
+Prompt mode      : oneshot
+Vector DB        : N/A
+Prediction Time (sec) : 2751.85
+----------------------------------------------------------------------
+
+             precision  recall f1-score support
+N               0.0000  0.0000   0.0000    1496
+S               0.1378  1.0000   0.2421     239
+accuracy        0.1378  0.1378   0.1378       0
+macro avg       0.0689  0.5000   0.1211    1735
+weighted avg    0.0190  0.1378   0.0334    1735
+
+======================================================================
+End of Report

@@ -6,7 +6,12 @@ from baselines.prompt import *
 from utils.gpt_client import gpt_call
 from utils.hf_client import hf_call
 from utils.log import log_to_file
-from utils.parser import extract_result
+from utils.parser import (
+    _extract_full_type,
+    extract_cot_result,
+    extract_oneshot_result,
+    extract_zeroshot_result,
+)
 
 def predict_text(text: str, 
             model_name: str, 
@@ -69,7 +74,18 @@ def predict(text_df: pd.DataFrame,
     for idx, row in text_df.iterrows():
         text = row['posts']
         output = predict_text(text, model_name, usr_prompt, max_new_tokens, idx, log_filepath, temperature)
-        mbti = extract_result(output)
+        normalized_output = output.strip() if isinstance(output, str) else ""
+        full_type = _extract_full_type(normalized_output)
+        if full_type:
+            mbti = full_type
+        elif prompt_mode == 'zeroshot':
+            mbti = extract_zeroshot_result(normalized_output)
+        elif prompt_mode == 'oneshot':
+            mbti = extract_oneshot_result(normalized_output)
+        elif prompt_mode == 'cot':
+            mbti = extract_cot_result(normalized_output)
+        else:
+            mbti = "????"
         pred_types.append(mbti)
         pred_IE.append(mbti[0])
         pred_NS.append(mbti[1])

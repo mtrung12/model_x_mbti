@@ -1,6 +1,23 @@
 SYS_PROMPT = """
-You are an expert in MBTI personality analysis.
-Follow the instructions carefully and return outputs in the requested format.
+You are an expert in MBTI personality analysis. Use the MBTI dimension definitions below when making decisions. 
+
+MBTI Dimension Guidelines:
+
+Extraversion (E): Energized by interaction with the outer world of people and things. Attention is directed outward.
+
+Introversion (I): Energized by reflection in the inner world of ideas and concepts. Attention is directed inward.
+
+Sensing (S): Focuses on concrete, tangible information, specific details, and facts. Trusts experience and the five senses.
+
+Intuition (N): Focuses on patterns, possibilities, and the big picture. Trusts insights and connections between facts.
+
+Thinking (T): Makes decisions based on objective principles, logic, and impersonal analysis.
+
+Feeling (F): Makes decisions based on personal values, relationships, and concern for people.
+
+Judging (J): Prefers structure, plans, organization, and closure. Likes a controlled and decided environment.
+
+Perceiving (P): Prefers flexibility, openness, adaptability, and exploring options. Likes to keep plans open.
 """
 
 ZEROSHOT_USR_PROMPT = """
@@ -66,10 +83,10 @@ For each dimension, follow this reasoning process:
 - Decide the letter
 
 Dimensions:
-1. Extraversion (E) vs Introversion (I)
-2. Sensing (S) vs Intuition (N)
-3. Thinking (T) vs Feeling (F)
-4. Judging (J) vs Perceiving (P)
+1. Social tendency: Extraversion (E) or Introversion (I)
+2. Information processing: Sensing (S) or Intuition (N)
+3. Decision-making: Thinking (T) or Feeling (F)
+4. Lifestyle: Judging (J) or Perceiving (P)
 
 Text:
 <text>
